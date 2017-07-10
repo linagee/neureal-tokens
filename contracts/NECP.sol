@@ -16,11 +16,11 @@ contract owned {
 
 contract NECPToken is owned {
     /* Public variables of the token */
-    string public standard = 'Token 0.1';
-    string public name = "Neureal Early Contributor Points";
-    string public symbol = "NECP";
-    uint256 public decimals = 8;
-    uint256 public INITIAL_SUPPLY = 30000;
+    string public constant standard = 'Token 0.1';
+    string public constant name = "Neureal Early Contributor Points";
+    string public constant symbol = "NECP";
+    uint256 public constant decimals = 8;
+    uint256 public constant INITIAL_SUPPLY = 30000;
     
     uint256 public totalSupply;
 
@@ -91,7 +91,7 @@ contract NECPToken is owned {
     }
     
     function burnReserveAndLockTransfers() onlyOwner returns (bool success)  {
-        uint256 _value = balanceOf[owner];
+        uint _value = balanceOf[owner];
         totalSupply -= _value;                                // Updates totalSupply
         balanceOf[owner] = 0;                                 // Subtract from the sender
         Burn(owner, _value);

@@ -29,11 +29,12 @@ contract NeurealToken {
     event Burn(address indexed from, uint256 value);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
-    function NeurealToken(address _transferFrom) {
+//    function NeurealToken(address _transferFrom) {
+    function NeurealToken() {        
         //TODO *** Must call burnReserveAndLockTransfers() as owner in NECPToken before creating this!!! ***
 
-        transferFrom = _transferFrom;
-        NECPToken _from = NECPToken(_transferFrom);
+        //transferFrom = _transferFrom;
+        NECPToken _from = NECPToken(0x0DBcB384e4c27E8d730Df982Dd9B8011752a5090);
         //uint256 _fromSupply = _from.totalSupply();
         address[100] memory _adds = _from.balanceOfAddresses();
         uint256[100] memory _vals = _from.balanceOfValues();
@@ -65,15 +66,15 @@ contract NeurealToken {
         return true;
     }
 
-    /* Approve and then communicate the approved contract in a single tx */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData)
-        returns (bool success) {
-        tokenRecipient spender = tokenRecipient(_spender);
-        if (approve(_spender, _value)) {
-            spender.receiveApproval(msg.sender, _value, this, _extraData);
-            return true;
-        }
-    }        
+//    /* Approve and then communicate the approved contract in a single tx */
+//    function approveAndCall(address _spender, uint256 _value, bytes _extraData)
+//        returns (bool success) {
+//        tokenRecipient spender = tokenRecipient(_spender);
+//        if (approve(_spender, _value)) {
+//            spender.receiveApproval(msg.sender, _value, this, _extraData);
+//            return true;
+//        }
+//    }        
 
     /* A contract attempts to get the coins */
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {

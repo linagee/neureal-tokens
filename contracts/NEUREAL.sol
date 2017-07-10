@@ -4,8 +4,7 @@ contract tokenRecipient { function receiveApproval(address _from, uint256 _value
 contract NECPToken {
     uint256 public totalSupply;
     mapping (address => uint256) public balanceOf;
-    mapping (address => mapping (address => uint256)) public allowance;
-    function burnAll();
+    address[] public balanceOfAddresses;
 }
 
 contract NeurealToken {
@@ -14,10 +13,10 @@ contract NeurealToken {
     string public name = "Neureal Token";
     string public symbol = "NEUREAL";
     uint256 public decimals = 18;
-    uint256 public INITIAL_SUPPLY = 150000000;
+    //uint256 public INITIAL_SUPPLY = 150000000;
     
-    NECPToken public transferFrom;
-    uint256 public totalSupply;
+    address public transferFrom;
+    uint256 public totalSupply = 0;
 
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
@@ -31,13 +30,20 @@ contract NeurealToken {
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function NeurealToken(address _transferFrom) {
-        transferFrom = NECPToken(_transferFrom);
+        //TODO *** Must call burnReserveAndLockTransfers() as owner in NECPToken before creating this!!! ***
+
+        transferFrom = _transferFrom;
+        NECPToken _from = NECPToken(_transferFrom);
         //TODO copy all balances (multiplied by split ammount) of transferFrom
-        balanceOf[msg.sender]
-        transferFrom.burnAll();
+        for (uint i = 0; i < _from.balanceOfAddresses.length; i++) {
+            address _add = _from.balanceOfAddresses[i];
+            uint256 _bal = _from.balanceOf[_add] * 400;
+            balanceOf[_add] = _bal;
+            totalSupply += _bal;
+        }
 
         //balanceOf[msg.sender] = INITIAL_SUPPLY;              // Give the creator all initial tokens
-        totalSupply = INITIAL_SUPPLY;                        // Update total supply
+        //totalSupply = INITIAL_SUPPLY;                        // Update total supply
     }
 
     /* Send coins */

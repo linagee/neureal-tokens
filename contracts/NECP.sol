@@ -1,5 +1,18 @@
 pragma solidity ^0.4.8;
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
+contract owned {
+    address public owner;
+    function owned() {
+        owner = msg.sender;
+    }
+    modifier onlyOwner {
+        if (msg.sender != owner) throw;
+        _;
+    }
+    function transferOwnership(address newOwner) onlyOwner {
+        owner = newOwner;
+    }
+}
 
 contract NECPToken {
     /* Public variables of the token */
@@ -13,17 +26,19 @@ contract NECPToken {
 
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
+    mapping (address => bool) balanceOfSeen;
+    address[] public balanceOfAddresses;
     mapping (address => mapping (address => uint256)) public allowance;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
-
     /* This notifies clients about the amount burnt */
     event Burn(address indexed from, uint256 value);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function NECPToken() {
         balanceOf[msg.sender] = INITIAL_SUPPLY;              // Give the creator all initial tokens
+        balanceOfAddresses[0] = msg.sender;
         totalSupply = INITIAL_SUPPLY;                        // Update total supply
     }
 
@@ -34,6 +49,10 @@ contract NECPToken {
         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
+        if (!balanceOfSeen[_to]) {
+            balanceOfAddresses[balanceOfAddresses.length] = _to;
+            balanceOfSeen[_to] = true;
+        }
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
     }
 
@@ -63,34 +82,25 @@ contract NECPToken {
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
+        if (!balanceOfSeen[_to]) {
+            balanceOfAddresses[balanceOfAddresses.length] = _to;
+            balanceOfSeen[_to] = true;
+        }
         Transfer(_from, _to, _value);
         return true;
     }
-
-    function burn(uint256 _value) returns (bool success) {
-        if (balanceOf[msg.sender] < _value) throw;            // Check if the sender has enough
-        balanceOf[msg.sender] -= _value;                      // Subtract from the sender
-        totalSupply -= _value;                                // Updates totalSupply
-        Burn(msg.sender, _value);
-        return true;
-    }
-
-    function burnFrom(address _from, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] < _value) throw;                // Check if the sender has enough
-        if (_value > allowance[_from][msg.sender]) throw;    // Check allowance
-        balanceOf[_from] -= _value;                          // Subtract from the sender
-        totalSupply -= _value;                               // Updates totalSupply
-        Burn(_from, _value);
-        return true;
-    }
     
-    function burnAll() returns (bool success) {
-        //TODO add owner and burn all token
+    function burnReserveAndLockTransfers() returns (bool success) ownerOnly {
+        _value = balanceOf[owner];
+        totalSupply -= _value;                                // Updates totalSupply
+        balanceOf[owner] = 0;                                 // Subtract from the sender
+        Burn(owner, _value);
+        //TODO lock token
         return true;
     }
 
     /* This unnamed function is called whenever someone tries to send ether to it */
     function () {
-        throw;     // Prevents accidental sending of ether
+        throw;   // Prevents accidental sending of ether
     }
 }

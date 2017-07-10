@@ -14,7 +14,7 @@ contract owned {
     }
 }
 
-contract NECPToken {
+contract NECPToken is owned {
     /* Public variables of the token */
     string public standard = 'Token 0.1';
     string public name = "Neureal Early Contributor Points";
@@ -90,8 +90,8 @@ contract NECPToken {
         return true;
     }
     
-    function burnReserveAndLockTransfers() returns (bool success) onlyOwner {
-        _value = balanceOf[owner];
+    function burnReserveAndLockTransfers() onlyOwner returns (bool success)  {
+        uint256 _value = balanceOf[owner];
         totalSupply -= _value;                                // Updates totalSupply
         balanceOf[owner] = 0;                                 // Subtract from the sender
         Burn(owner, _value);

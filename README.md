@@ -24,7 +24,7 @@ The balances are automatically transfered as part of the NEUREAL contract.
 
 - Symbol: NEUREAL
 - Name: Neureal Token
-- Address: 0xEc9b2392B1dcc5bd9e92A2EEf9CeCF16aff0816c
+- Address: 0x1228c735Dd45A9Bd77d86e068ab47872FFfB64d7
 - Decimal places: 18
 - Total supply: 25,000,000
 
@@ -32,7 +32,7 @@ The balances are automatically transfered as part of the NEUREAL contract.
 
 In Ethereum Wallet / Mist, select the CONTRACTS tab and click WATCH TOKEN to open the Add token window. Then:
 
-- Under TOKEN CONTRACT ADDRESS, enter 0xB8f527Da18D3ef8BE32730229D598775cc6B659a or 0xEc9b2392B1dcc5bd9e92A2EEf9CeCF16aff0816c
+- Under TOKEN CONTRACT ADDRESS, enter 0xB8f527Da18D3ef8BE32730229D598775cc6B659a or 0x1228c735Dd45A9Bd77d86e068ab47872FFfB64d7
 - The additional fields should automatically be filled in.
 
 - Click OK
@@ -42,7 +42,7 @@ In Ethereum Wallet / Mist, select the CONTRACTS tab and click WATCH TOKEN to ope
 In Ethereum Wallet / Mist, select the CONTRACTS tab and click WATCH CONTRACT to open the Watch contract window. Then:
 
 - Under CONTRACT NAME, enter NEUREAL-ECP or NEUREAL
-- Under CONTRACT ADDRESS, enter 0xB8f527Da18D3ef8BE32730229D598775cc6B659a or 0xEc9b2392B1dcc5bd9e92A2EEf9CeCF16aff0816c
+- Under CONTRACT ADDRESS, enter 0xB8f527Da18D3ef8BE32730229D598775cc6B659a or 0x1228c735Dd45A9Bd77d86e068ab47872FFfB64d7
 - Copy the Standard ERC20 Application Binary Interface below and paste it into the JSON INTERFACE text box
 
 ```javascript

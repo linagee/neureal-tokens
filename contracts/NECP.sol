@@ -91,7 +91,7 @@ contract NECPToken is owned {
     }
     
     function burnReserveAndLockTransfers() onlyOwner returns (bool success)  {
-        uint _value = balanceOf[owner];
+        uint256 _value = balanceOf[owner];
         totalSupply -= _value;                                // Updates totalSupply
         balanceOf[owner] = 0;                                 // Subtract from the sender
         Burn(owner, _value);

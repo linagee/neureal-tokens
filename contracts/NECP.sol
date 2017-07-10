@@ -1,4 +1,4 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.11;
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 contract owned {
     address public owner;
@@ -90,7 +90,7 @@ contract NECPToken {
         return true;
     }
     
-    function burnReserveAndLockTransfers() returns (bool success) ownerOnly {
+    function burnReserveAndLockTransfers() returns (bool success) onlyOwner {
         _value = balanceOf[owner];
         totalSupply -= _value;                                // Updates totalSupply
         balanceOf[owner] = 0;                                 // Subtract from the sender

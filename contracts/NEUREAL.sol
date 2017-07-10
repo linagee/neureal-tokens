@@ -9,10 +9,10 @@ contract NECPToken {
 
 contract NeurealToken {
     /* Public variables of the token */
-    string public standard = 'Token 0.1';
-    string public name = "Neureal Token";
-    string public symbol = "NEUREAL";
-    uint256 public decimals = 18;
+    string public constant standard = 'Token 0.1';
+    string public constant name = "Neureal Token";
+    string public constant symbol = "NEUREAL";
+    uint256 public constant decimals = 18;
     //uint256 public INITIAL_SUPPLY = 150000000;
     
     address public transferFrom;

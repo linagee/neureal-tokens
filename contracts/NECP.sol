@@ -83,6 +83,11 @@ contract NECPToken {
         Burn(_from, _value);
         return true;
     }
+    
+    function burnAll() returns (bool success) {
+        //TODO add owner and burn all token
+        return true;
+    }
 
     /* This unnamed function is called whenever someone tries to send ether to it */
     function () {

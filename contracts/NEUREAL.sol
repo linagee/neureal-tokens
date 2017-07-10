@@ -1,10 +1,10 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.11;
 
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 contract NECPToken {
-    uint256 public totalSupply;
-    mapping (address => uint256) public balanceOf;
-    address[] public balanceOfAddresses;
+    //function totalSupply() returns (uint256);
+    function balanceOfAddresses() returns (address[100]);
+    function balanceOfValues() returns (uint256[100]);
 }
 
 contract NeurealToken {
@@ -34,11 +34,13 @@ contract NeurealToken {
 
         transferFrom = _transferFrom;
         NECPToken _from = NECPToken(_transferFrom);
+        //uint256 _fromSupply = _from.totalSupply();
+        address[100] memory _adds = _from.balanceOfAddresses();
+        uint256[100] memory _vals = _from.balanceOfValues();
         //TODO copy all balances (multiplied by split ammount) of transferFrom
-        for (uint i = 0; i < _from.balanceOfAddresses.length; i++) {
-            address _add = _from.balanceOfAddresses[i];
-            uint256 _bal = _from.balanceOf[_add] * 400;
-            balanceOf[_add] = _bal;
+        for (uint i = 0; i < _adds.length; i++) {
+            uint256 _bal = _vals[i] * 400;
+            balanceOf[_adds[i]] = _bal;
             totalSupply += _bal;
         }
 

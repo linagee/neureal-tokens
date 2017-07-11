@@ -1,5 +1,5 @@
 /* jshint esversion: 6 */
-const HDWalletProvider = require("truffle-hdwallet-provider");
+//const HDWalletProvider = require("truffle-hdwallet-provider");
 const fs = require("fs");
 
 // First read in the secrets.json to get our mnemonic
@@ -30,8 +30,8 @@ module.exports = {
       host: "https://morden.infura.io",
     },
     ropsten: {
-      network_id: "3",
-      provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io")
+      network_id: "3"
+      //provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io")
     },
     testrpc: {
       network_id: "default",

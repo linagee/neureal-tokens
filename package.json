@@ -24,7 +24,6 @@
   "homepage": "https://github.com/neureal/neureal-tokens#readme",
   "dependencies": {
     "ethereumjs-testrpc": "^4.0.1",
-    "truffle": "^3.4.3",
-    "truffle-hdwallet-provider": "0.0.3"
+    "truffle": "^3.4.3"
   }
 }

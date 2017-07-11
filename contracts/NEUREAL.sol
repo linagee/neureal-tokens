@@ -2,9 +2,7 @@ pragma solidity ^0.4.11;
 
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 contract NECPToken {
-    function totalSupply() returns (uint256);
-    //function balanceOfAddresses() returns (address[100]);
-    //function balanceOfValues() returns (uint256[100]);
+    //function totalSupply() returns (uint256);
     function holders() returns (uint256);
     function holder(uint256 i) returns (address, uint256);
 }
@@ -16,6 +14,7 @@ contract NeurealToken {
     string public constant symbol = "NEUREAL";
     uint256 public constant decimals = 18;
     uint256 public MAXIMUM_SUPPLY = 150000000000000000000000000;
+
     //TODO *** Must set this to the Neureal Early Contributor Points (NECP) contract address before creating this!!! ***
     address public transferFromContract = 0xB7fdEE4fd4FcF9ec8eBf0660D80b0C40b94a0BDB;
     
@@ -31,32 +30,23 @@ contract NeurealToken {
     /* This notifies clients about the amount burnt */
     event Burn(address indexed from, uint256 value);
 
-    /* Initializes contract with initial supply tokens to the creator of the contract */
-    function NeurealToken() {        
-        //TODO *** Must call burnReserveAndLockTransfers() as owner in NECPToken before creating this!!! ***
+    /* Initializes contract and transfers balances from the transferFromContract */
+    function NeurealToken() {
+        //TODO try to owner call burnReserveAndLockTransfers() in NECP from here 
 
-        //transferFrom = _transferFrom;
+        //TODO *** Must call burnReserveAndLockTransfers() as owner in NECPToken before creating this!!! ***
         NECPToken _from = NECPToken(transferFromContract);
-        // uint256 _fromSupply = _from.totalSupply();
-        //TODO copy all balances (multiplied by split ammount) of transferFrom
-        // address[100] memory _adds = _from.balanceOfAddresses();
-        // uint256[100] memory _vals = _from.balanceOfValues();
-        // for (uint256 i = 0; i < _adds.length; i++) {
-        //     uint256 _bal = _vals[i] * 1;
-        //     balanceOf[_adds[i]] = _bal;
-        //     totalSupply += _bal;
-        // }
         uint256 _fromCount = _from.holders();
         for (uint256 i = 0; i < _fromCount; i++) {
             var (_add, _bal) = _from.holder(i);
-            uint256 _balConvert = _bal * 10000000000;
-            if (totalSupply + _balConvert > MAXIMUM_SUPPLY) continue;
+            uint256 _balConvert = _bal * 10000000000; //TODO add multiplier here
+            if (_balConvert < _bal) continue;
+            uint256 _newTotalSupply = totalSupply + _balConvert;
+            if (_newTotalSupply > MAXIMUM_SUPPLY) continue;
+            if (_newTotalSupply < totalSupply) continue;
             balanceOf[_add] = _balConvert;
-            totalSupply += _balConvert;
+            totalSupply = _newTotalSupply;
         }
-
-        // balanceOf[msg.sender] = _fromSupply;              // Give the creator all initial tokens
-        // totalSupply = _fromSupply;                        // Update total supply
     }
 
     /* Send coins */
@@ -70,15 +60,13 @@ contract NeurealToken {
     }
 
     /* Allow another contract to spend some tokens in your behalf */
-    function approve(address _spender, uint256 _value)
-        returns (bool success) {
+    function approve(address _spender, uint256 _value) returns (bool success) {
         allowance[msg.sender][_spender] = _value;
         return true;
     }
 
     /* Approve and then communicate the approved contract in a single tx */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData)
-        returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         tokenRecipient spender = tokenRecipient(_spender);
         if (approve(_spender, _value)) {
             spender.receiveApproval(msg.sender, _value, this, _extraData);

@@ -25,13 +25,15 @@ contract NECPToken is owned {
     
     uint256 public totalSupply;
 
-    /* This creates an array with all balances */
+    /* This tracks all balances */
     mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+
+    /* This tracks token holders in a loopable mapping */
     mapping (address => bool) balanceOfSeen;
     uint256 public holders = 1;
     mapping (uint256 => address) holderAddresses;
 
-    mapping (address => mapping (address => uint256)) public allowance;
 
 
     /* This generates a public event on the blockchain that will notify clients */
@@ -42,7 +44,7 @@ contract NECPToken is owned {
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function NECPToken() {
         balanceOf[msg.sender] = MAXIMUM_SUPPLY;              // Give the creator all initial tokens
-        holderAddresses[0] = msg.sender;
+        holderAddresses[0] = msg.sender;                     // Set creator as the sole holder
         totalSupply = MAXIMUM_SUPPLY;                        // Update total supply
     }
 
@@ -102,15 +104,6 @@ contract NECPToken is owned {
     function holder(uint256 i) constant returns (address, uint256) {
         return (holderAddresses[i], balanceOf[holderAddresses[i]]);
     }
-    // function balanceOfValues() constant returns (uint256[100]) {
-    //     uint256[100] memory balanceOfValues;
-
-    //     for (uint i = 0; i < balanceOfAddresses.length; i++) {
-    //         balanceOfValues[i] = balanceOf[balanceOfAddresses[i]];
-    //     }
-    //     return balanceOfValues;
-    // }
-    
 
     function burnReserveAndLockTransfers() onlyOwner returns (bool success)  {
         uint256 _value = balanceOf[owner];

@@ -1,23 +1,23 @@
 var NECPToken = artifacts.require("./NECPToken.sol");
-var SampleRecipientSuccess = artifacts.require("./SampleRecipientSuccess.sol");
+//var SampleRecipientSuccess = artifacts.require("./SampleRecipientSuccess.sol");
 
 contract("NECPToken", function(accounts) {
 
 //CREATION
 
-    it("creation: should create an initial balance of 3000000000000 for the creator", function(done) {
-        return NECPToken.deployed().then(function(ctr) {
+    it("creation: should create an initial balance of 30000 for the creator", function(done) {
+        NECPToken.new({from: accounts[0]}).then(function(ctr) {
             return ctr.balanceOf.call(accounts[0]);
-        }).then(function (result) {
-            assert.strictEqual(result.toNumber(), 3000000000000);
-//        assert.strictEqual(result.toNumber(), 3000000);
-            done();
+    }).then(function (result) {
+        assert.strictEqual(result.toNumber(), 3000000000000);
+        //assert.strictEqual(result.toNumber(), 300000000000);
+        done();
         }).catch(done);
     });
 
     it("creation: test correct setting of vanity information", function(done) {
       var ctr;
-        NECPToken.new({from: accounts[0], gas: 3000000}).then(function(result) {
+        NECPToken.new({from: accounts[0]}).then(function(result) {
             ctr = result;
             return ctr.name.call();
     }).then(function (result) {
@@ -31,6 +31,7 @@ contract("NECPToken", function(accounts) {
         done();
         }).catch(done);
     });
+
 
 ////TRANSERS
 ////normal transfers without approvals.

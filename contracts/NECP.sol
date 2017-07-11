@@ -27,14 +27,11 @@ contract NECPToken is owned {
 
     /* This tracks all balances */
     mapping (address => uint256) public balanceOf;
-    mapping (address => mapping (address => uint256)) public allowance;
 
     /* This tracks token holders in a loopable mapping */
     mapping (address => bool) balanceOfSeen;
     uint256 public holders = 1;
     mapping (uint256 => address) holderAddresses;
-
-
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -55,52 +52,21 @@ contract NECPToken is owned {
         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
-        if (_value != 0) trackHolder(_to);
+        if (_value != 0) trackHolder(msg.sender, _to);
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
     }
 
-    /* Allow another contract to spend some tokens in your behalf */
-    function approve(address _spender, uint256 _value) returns (bool success) {
-        allowance[msg.sender][_spender] = _value;
-        return true;
-    }
+    /* If we have not seen them before, add the account address to holders */
+    function trackHolder(address _from, address _to) internal {
+        if (balanceOf[_from] == 0) {
 
-    /* Approve and then communicate the approved contract in a single tx */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
-        tokenRecipient spender = tokenRecipient(_spender);
-        if (approve(_spender, _value)) {
-            spender.receiveApproval(msg.sender, _value, this, _extraData);
-            return true;
         }
-    }        
-
-    /* A contract attempts to get the coins */
-    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (_to == 0x0) throw;                                // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
-        if (_value > allowance[_from][msg.sender]) throw;     // Check allowance
-        balanceOf[_from] -= _value;                           // Subtract from the sender
-        balanceOf[_to] += _value;                             // Add the same to the recipient
-        allowance[_from][msg.sender] -= _value;
-        if (_value != 0) trackHolder(_to);
-        Transfer(_from, _to, _value);
-        return true;
+        if (balanceOfSeen[_to]) return;
+        holderAddresses[holders] = _to;
+        holders++;
+        balanceOfSeen[_to] = true;
     }
-
-    function trackHolder(address _to) internal {
-        if (!balanceOfSeen[_to]) {
-            holderAddresses[holders] = _to;
-            holders++;
-            balanceOfSeen[_to] = true;
-        }
-    }
-    // function untrackHolder(uint256 _del) internal {
-    //     if (!balanceOfSeen[_to]) {
-    //         balanceOfAddresses[balanceOfAddresses.length] = _to;
-    //         balanceOfSeen[_to] = true;
-    //     }
-    // }
+    /* Get a token holder by index */
     function holder(uint256 i) constant returns (address, uint256) {
         return (holderAddresses[i], balanceOf[holderAddresses[i]]);
     }

@@ -16,14 +16,14 @@
   "keywords": [
     "neureal"
   ],
-  "authors": [
-  ],
+  "authors": [],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/neureal/neureal-tokens/issues"
   },
   "homepage": "https://github.com/neureal/neureal-tokens#readme",
   "dependencies": {
+    "truffle": "^3.4.3",
     "truffle-hdwallet-provider": "0.0.3"
   }
 }

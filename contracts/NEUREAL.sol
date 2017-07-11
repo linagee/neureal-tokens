@@ -2,9 +2,11 @@ pragma solidity ^0.4.11;
 
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 contract NECPToken {
-    //function totalSupply() returns (uint256);
-    function balanceOfAddresses() returns (address[100]);
-    function balanceOfValues() returns (uint256[100]);
+    function totalSupply() returns (uint256);
+    //function balanceOfAddresses() returns (address[100]);
+    //function balanceOfValues() returns (uint256[100]);
+    function holders() returns (uint256);
+    function holder(uint256 i) returns (address, uint256);
 }
 
 contract NeurealToken {
@@ -13,9 +15,10 @@ contract NeurealToken {
     string public constant name = "Neureal Token";
     string public constant symbol = "NEUREAL";
     uint256 public constant decimals = 18;
-    //uint256 public INITIAL_SUPPLY = 150000000;
+    uint256 public MAXIMUM_SUPPLY = 150000000000000000000000000;
+    //TODO *** Must set this to the Neureal Early Contributor Points (NECP) contract address before creating this!!! ***
+    address public transferFromContract = 0xB7fdEE4fd4FcF9ec8eBf0660D80b0C40b94a0BDB;
     
-    address public transferFrom;
     uint256 public totalSupply = 0;
 
     /* This creates an array with all balances */
@@ -29,24 +32,31 @@ contract NeurealToken {
     event Burn(address indexed from, uint256 value);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
-//    function NeurealToken(address _transferFrom) {
     function NeurealToken() {        
         //TODO *** Must call burnReserveAndLockTransfers() as owner in NECPToken before creating this!!! ***
 
         //transferFrom = _transferFrom;
-        NECPToken _from = NECPToken(0x0DBcB384e4c27E8d730Df982Dd9B8011752a5090);
-        //uint256 _fromSupply = _from.totalSupply();
-        address[100] memory _adds = _from.balanceOfAddresses();
-        uint256[100] memory _vals = _from.balanceOfValues();
+        NECPToken _from = NECPToken(transferFromContract);
+        // uint256 _fromSupply = _from.totalSupply();
         //TODO copy all balances (multiplied by split ammount) of transferFrom
-        for (uint i = 0; i < _adds.length; i++) {
-            uint256 _bal = _vals[i] * 400;
-            balanceOf[_adds[i]] = _bal;
-            totalSupply += _bal;
+        // address[100] memory _adds = _from.balanceOfAddresses();
+        // uint256[100] memory _vals = _from.balanceOfValues();
+        // for (uint256 i = 0; i < _adds.length; i++) {
+        //     uint256 _bal = _vals[i] * 1;
+        //     balanceOf[_adds[i]] = _bal;
+        //     totalSupply += _bal;
+        // }
+        uint256 _fromCount = _from.holders();
+        for (uint256 i = 0; i < _fromCount; i++) {
+            var (_add, _bal) = _from.holder(i);
+            uint256 _balConvert = _bal * 10000000000;
+            if (totalSupply + _balConvert > MAXIMUM_SUPPLY) continue;
+            balanceOf[_add] = _balConvert;
+            totalSupply += _balConvert;
         }
 
-        //balanceOf[msg.sender] = INITIAL_SUPPLY;              // Give the creator all initial tokens
-        //totalSupply = INITIAL_SUPPLY;                        // Update total supply
+        // balanceOf[msg.sender] = _fromSupply;              // Give the creator all initial tokens
+        // totalSupply = _fromSupply;                        // Update total supply
     }
 
     /* Send coins */

@@ -1,4 +1,5 @@
 pragma solidity ^0.4.11;
+
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 contract owned {
     address public owner;
@@ -20,15 +21,18 @@ contract NECPToken is owned {
     string public constant name = "Neureal Early Contributor Points";
     string public constant symbol = "NECP";
     uint256 public constant decimals = 8;
-    uint256 public constant INITIAL_SUPPLY = 30000;
+    uint256 public constant MAXIMUM_SUPPLY = 3000000000000;
     
     uint256 public totalSupply;
 
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
     mapping (address => bool) balanceOfSeen;
-    address[100] public balanceOfAddresses;
+    uint256 public holders = 1;
+    mapping (uint256 => address) holderAddresses;
+
     mapping (address => mapping (address => uint256)) public allowance;
+
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -37,9 +41,9 @@ contract NECPToken is owned {
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function NECPToken() {
-        balanceOf[msg.sender] = INITIAL_SUPPLY;              // Give the creator all initial tokens
-        balanceOfAddresses[0] = msg.sender;
-        totalSupply = INITIAL_SUPPLY;                        // Update total supply
+        balanceOf[msg.sender] = MAXIMUM_SUPPLY;              // Give the creator all initial tokens
+        holderAddresses[0] = msg.sender;
+        totalSupply = MAXIMUM_SUPPLY;                        // Update total supply
     }
 
     /* Send coins */
@@ -49,23 +53,18 @@ contract NECPToken is owned {
         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
-        if (!balanceOfSeen[_to]) {
-            balanceOfAddresses[balanceOfAddresses.length] = _to;
-            balanceOfSeen[_to] = true;
-        }
+        if (_value != 0) trackHolder(_to);
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
     }
 
     /* Allow another contract to spend some tokens in your behalf */
-    function approve(address _spender, uint256 _value)
-        returns (bool success) {
+    function approve(address _spender, uint256 _value) returns (bool success) {
         allowance[msg.sender][_spender] = _value;
         return true;
     }
 
     /* Approve and then communicate the approved contract in a single tx */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData)
-        returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         tokenRecipient spender = tokenRecipient(_spender);
         if (approve(_spender, _value)) {
             spender.receiveApproval(msg.sender, _value, this, _extraData);
@@ -82,22 +81,35 @@ contract NECPToken is owned {
         balanceOf[_from] -= _value;                           // Subtract from the sender
         balanceOf[_to] += _value;                             // Add the same to the recipient
         allowance[_from][msg.sender] -= _value;
-        if (!balanceOfSeen[_to]) {
-            balanceOfAddresses[balanceOfAddresses.length] = _to;
-            balanceOfSeen[_to] = true;
-        }
+        if (_value != 0) trackHolder(_to);
         Transfer(_from, _to, _value);
         return true;
     }
-    
-    function balanceOfValues() constant returns (uint256[100]) {
-        uint256[100] memory balanceOfValues;
 
-        for (uint i = 0; i < balanceOfAddresses.length; i++) {
-            balanceOfValues[i] = balanceOf[balanceOfAddresses[i]];
+    function trackHolder(address _to) internal {
+        if (!balanceOfSeen[_to]) {
+            holderAddresses[holders] = _to;
+            holders++;
+            balanceOfSeen[_to] = true;
         }
-        return balanceOfValues;
     }
+    // function untrackHolder(uint256 _del) internal {
+    //     if (!balanceOfSeen[_to]) {
+    //         balanceOfAddresses[balanceOfAddresses.length] = _to;
+    //         balanceOfSeen[_to] = true;
+    //     }
+    // }
+    function holder(uint256 i) constant returns (address, uint256) {
+        return (holderAddresses[i], balanceOf[holderAddresses[i]]);
+    }
+    // function balanceOfValues() constant returns (uint256[100]) {
+    //     uint256[100] memory balanceOfValues;
+
+    //     for (uint i = 0; i < balanceOfAddresses.length; i++) {
+    //         balanceOfValues[i] = balanceOf[balanceOfAddresses[i]];
+    //     }
+    //     return balanceOfValues;
+    // }
     
 
     function burnReserveAndLockTransfers() onlyOwner returns (bool success)  {

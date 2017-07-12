@@ -7,61 +7,66 @@ contract("NECPToken", function(accounts) {
 
     it("creation: should create an initial balance of 30000 for the creator", function(done) {
         NECPToken.new({from: accounts[0]}).then(function(ctr) {
+            console.log("NECPToken Contract:" + ctr.address);
             return ctr.balanceOf.call(accounts[0]);
-    }).then(function (result) {
-        assert.strictEqual(result.toNumber(), 3000000000000);
-        //assert.strictEqual(result.toNumber(), 300000000000);
-        done();
+        }).then(function (result) {
+            assert.strictEqual(result.toNumber(), 3000000000000);
+            done();
         }).catch(done);
     });
 
     it("creation: test correct setting of vanity information", function(done) {
       var ctr;
-        NECPToken.new({from: accounts[0]}).then(function(result) {
+        NECPToken.new({from: accounts[0]})
+        .then(function(result) {
             ctr = result;
+            console.log("NECPToken Contract:" + ctr.address);
             return ctr.name.call();
-    }).then(function (result) {
-        assert.strictEqual(result, 'Neureal Early Contributor Points');
-        return ctr.decimals.call();
-    }).then(function(result) {
-        assert.strictEqual(result.toNumber(), 8);
-        return ctr.symbol.call();
-    }).then(function(result) {
-        assert.strictEqual(result, 'NECP');
-        done();
+        }).then(function (result) {
+            assert.strictEqual(result, 'Neureal Early Contributor Points');
+            return ctr.decimals.call();
+        }).then(function(result) {
+            assert.strictEqual(result.toNumber(), 8);
+            return ctr.symbol.call();
+        }).then(function(result) {
+            assert.strictEqual(result, 'NECP');
+            done();
         }).catch(done);
     });
 
 
-////TRANSERS
-////normal transfers without approvals.
-//
-//    //this is not *good* enough as the contract could still throw an error otherwise.
-//    //ideally one should check balances before and after, but estimateGas currently always throws an error.
-//    //it's not giving estimate on gas used in the event of an error.
-//    it("transfers: ether transfer should be reversed.", function(done) {
+//TRANSERS
+//normal transfers without approvals.
+
+//    it("transfers: give ether transfer should be reversed.", function(done) {
 //        var ctr;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
+//        NECPToken.new({from: accounts[0]}).then(function(result) {
 //            ctr = result;
 //            return web3.eth.sendTransaction({from: accounts[0], to: ctr.address, value: web3.toWei("10", "Ether")});
 //        }).catch(function(result) {
 //            done();
 //        }).catch(done);
 //    });
-//
-//
-//    it("transfers: should transfer 10000 to accounts[1] with accounts[0] having 10000", function(done) {
-//        var ctr;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.transfer(accounts[1], 10000, {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.balanceOf.call(accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 10000);
-//            done();
-//        }).catch(done);
-//    });
+
+
+    it("transfers: should transfer 100 NECP to accounts[1] to accounts[900]", function(done) {
+        var ctr;
+        NECPToken.new({from: accounts[0]}).then(function(result) {
+            ctr = result;
+            console.log("NECPToken Contract:" + ctr.address);
+            for (var i = 1; i <= 90; i++) {
+                ctr.transfer(accounts[i], 10000000000, {from: accounts[0]});
+            }
+            console.log(ctr.balanceOf.call(accounts[2]));
+
+            return ctr.transfer(accounts[1], 2000000000, {from: accounts[0]});
+        }).then(function (result) {
+            return ctr.balanceOf.call(accounts[1]);
+        }).then(function (result) {
+            assert.strictEqual(result.toNumber(), 12000000000);
+            done();
+        }).catch(done);
+    });
 //
 //    it("transfers: should fail when trying to transfer 10001 to accounts[1] with accounts[0] having 10000", function(done) {
 //        var ctr;

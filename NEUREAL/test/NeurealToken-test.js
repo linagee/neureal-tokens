@@ -10,15 +10,19 @@ contract("NeurealToken", function(accounts) {
         NeurealToken.new({from: accounts[0]}).then(function(result) {
             ctr = result;
             return ctr.name.call();
-    }).then(function (result) {
-        assert.strictEqual(result, 'Neureal Token');
-        return ctr.decimals.call();
-    }).then(function(result) {
-        assert.strictEqual(result.toNumber(), 18);
-        return ctr.symbol.call();
-    }).then(function(result) {
-        assert.strictEqual(result, 'NEUREAL');
-        done();
+        }).then(function (result) {
+            assert.strictEqual(result, 'Neureal Token');
+            return ctr.decimals.call();
+        }).then(function(result) {
+            assert.strictEqual(result.toNumber(), 18);
+            return ctr.symbol.call();
+        }).then(function(result) {
+            assert.strictEqual(result, 'NEUREAL');
+            return ctr.balanceOf.call(accounts[1]);
+        }).then(function(result) {
+            assert.strictEqual(result.toNumber(), 120000000000000000000);
+        }).then(function(result) {
+            done();
         }).catch(done);
     });
 

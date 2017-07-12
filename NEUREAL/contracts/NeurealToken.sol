@@ -16,7 +16,7 @@ contract NeurealToken {
     uint256 public MAXIMUM_SUPPLY = 150000000000000000000000000;
 
     //TODO *** Must set this to the Neureal Early Contributor Points (NECP) contract address before creating this!!! ***
-    address public transferFromContract = 0xB7fdEE4fd4FcF9ec8eBf0660D80b0C40b94a0BDB;
+    address public transferFromContract = 0xb4315153492424153ffA0c631bf73DA69F362be3;
     
     uint256 public totalSupply = 0;
 

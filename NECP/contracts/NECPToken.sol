@@ -42,6 +42,7 @@ contract NECPToken is owned {
         balanceOf[msg.sender] = MAXIMUM_SUPPLY;              // Give the creator all initial tokens
         holderAddresses[0] = msg.sender;                     // Set creator as the sole holder
         totalSupply = MAXIMUM_SUPPLY;                        // Update total supply
+        Transfer(msg.sender, msg.sender, MAXIMUM_SUPPLY);    // Notify all that token has been created
     }
 
     /* Send coins */

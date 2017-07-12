@@ -30,7 +30,10 @@ module.exports = {
       host: "https://morden.infura.io",
     },
     ropsten: {
-      network_id: "3"
+      network_id: "3",
+      host: "localhost",
+      port: "8545",
+      gas: 1000000
       //provider: new HDWalletProvider(mnemonic, "https://ropsten.infura.io")
     },
     testrpc: {

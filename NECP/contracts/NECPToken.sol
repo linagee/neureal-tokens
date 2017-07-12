@@ -23,7 +23,7 @@ contract NECPToken is owned {
     uint256 public constant MAXIMUM_SUPPLY = 3000000000000;
     
     uint256 public totalSupply;
-    uint256 public frozen = false;
+    bool public frozen = false;
 
     /* This tracks all balances */
     mapping (address => uint256) public balanceOf;
@@ -60,8 +60,17 @@ contract NECPToken is owned {
 
     /* If we have not seen them before, add the account address to holders */
     function trackHolder(address _from, address _to) internal {
-        if (balanceOf[_from] == 0) {
-
+        if (balanceOf[_from] < 100000000) { //dust
+            for (uint256 i = 0; i < holders; i++) {
+                if (holderAddresses[i] == _from) {
+                    address _last = holderAddresses[holders - 1];
+                    holderAddresses[i] = _last;
+                    delete holderAddresses[holders - 1];
+                    holders--;
+                    balanceOfSeen[_from] = false;
+                    break;
+                }
+            }
         }
         if (balanceOfSeen[_to]) return;
         holderAddresses[holders] = _to;

@@ -54,7 +54,7 @@ contract("NECPToken", function(accounts) {
         NECPToken.new({from: accounts[0]}).then(function(result) {
             ctr = result;
             console.log("NECPToken Contract:" + ctr.address);
-            for (var i = 1; i <= 90; i++) {
+            for (var i = 1; i < 3; i++) {
                 ctr.transfer(accounts[i], 10000000000, {from: accounts[0]});
             }
             console.log(ctr.balanceOf.call(accounts[2]));

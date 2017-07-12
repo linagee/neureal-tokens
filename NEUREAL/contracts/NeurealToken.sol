@@ -2,9 +2,10 @@ pragma solidity ^0.4.11;
 
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 contract NECPToken {
+    function balanceOf(address) returns (uint256);
     //function totalSupply() returns (uint256);
-    function holders() returns (uint256);
-    function holder(uint256 i) returns (address, uint256);
+    //function holders() returns (uint256);
+    //function holder(uint256 i) returns (address, uint256);
 }
 
 contract NeurealToken {
@@ -16,13 +17,14 @@ contract NeurealToken {
     uint256 public MAXIMUM_SUPPLY = 150000000000000000000000000;
 
     //TODO *** Must set this to the Neureal Early Contributor Points (NECP) contract address before creating this!!! ***
-    address public transferFromContract = 0xb4315153492424153ffA0c631bf73DA69F362be3;
+    address public transferFromContract = 0xCe8c3E54d4c7a4DC353B1D42edAF38A553aFf8E5;
     
     uint256 public totalSupply = 0;
 
     /* This creates an array with all balances */
     mapping (address => uint256) public balanceOf;
     mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) migrated;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -35,19 +37,39 @@ contract NeurealToken {
         //TODO try to owner call burnReserveAndLockTransfers() in NECP from here 
 
         //TODO *** Must call burnReserveAndLockTransfers() as owner in NECPToken before creating this!!! ***
+
+        // NECPToken _from = NECPToken(transferFromContract);
+        // uint256 _fromCount = _from.holders();
+        // for (uint256 i = 0; i < _fromCount; i++) {
+        //     var (_add, _bal) = _from.holder(i);
+        //     if (_bal < 10000000000) continue; //dust
+        //     uint256 _balConvert = _bal * 10000000000 * 400; //TODO add multiplier here
+        //     if (_balConvert < _bal) continue; //uint256 overflow
+        //     uint256 _newTotalSupply = totalSupply + _balConvert;
+        //     if (_newTotalSupply > MAXIMUM_SUPPLY) continue; //max
+        //     if (_newTotalSupply < totalSupply) continue; //uint256 overflow
+        //     balanceOf[_add] = _balConvert;
+        //     totalSupply = _newTotalSupply;
+        // }
+    }
+
+    /* Migrate balances from NECP holders */
+    function migrate(address _add) {
+        if (_add == 0x0) throw;
+        if (totalSupply >= MAXIMUM_SUPPLY) throw;
+        if (migrated[_add]) throw;
         NECPToken _from = NECPToken(transferFromContract);
-        uint256 _fromCount = _from.holders();
-        for (uint256 i = 0; i < _fromCount; i++) {
-            var (_add, _bal) = _from.holder(i);
-            if (_bal < 10000000000) continue; //dust
-            uint256 _balConvert = _bal * 10000000000 * 400; //TODO add multiplier here
-            if (_balConvert < _bal) continue; //uint256 overflow
-            uint256 _newTotalSupply = totalSupply + _balConvert;
-            if (_newTotalSupply > MAXIMUM_SUPPLY) continue; //max
-            if (_newTotalSupply < totalSupply) continue; //uint256 overflow
-            balanceOf[_add] = _balConvert;
-            totalSupply = _newTotalSupply;
+
+        uint256 _balConvert = _from.balanceOf(_add) * 10000000000 * 400; //TODO add multiplier here
+        uint256 _newTotalSupply = totalSupply + _balConvert;
+        if (_newTotalSupply > MAXIMUM_SUPPLY) { //max
+            _balConvert = MAXIMUM_SUPPLY - totalSupply;
+            _newTotalSupply = MAXIMUM_SUPPLY;
         }
+
+        migrated[_add] = true;
+        balanceOf[_add] += _balConvert;
+        totalSupply = _newTotalSupply;
     }
 
     /* Send coins */

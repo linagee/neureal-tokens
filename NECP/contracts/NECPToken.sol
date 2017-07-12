@@ -28,10 +28,10 @@ contract NECPToken is owned {
     /* This tracks all balances */
     mapping (address => uint256) public balanceOf;
 
-    /* This tracks token holders in a loopable mapping */
-    mapping (address => bool) balanceOfSeen;
-    uint256 public holders = 1;
-    mapping (uint256 => address) holderAddresses;
+    // /* This tracks token holders in a loopable mapping */
+    // mapping (address => bool) balanceOfSeen;
+    // uint256 public holders = 1;
+    // mapping (uint256 => address) holderAddresses;
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -41,7 +41,7 @@ contract NECPToken is owned {
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function NECPToken() {
         balanceOf[msg.sender] = MAXIMUM_SUPPLY;              // Give the creator all initial tokens
-        holderAddresses[0] = msg.sender;                     // Set creator as the sole holder
+        //holderAddresses[0] = msg.sender;                     // Set creator as the sole holder
         totalSupply = MAXIMUM_SUPPLY;                        // Update total supply
         Transfer(msg.sender, msg.sender, MAXIMUM_SUPPLY);    // Notify all that token has been created
     }
@@ -54,33 +54,33 @@ contract NECPToken is owned {
         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
-        if (_value != 0) trackHolder(msg.sender, _to);
+        //if (_value != 0) trackHolder(msg.sender, _to);
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
     }
 
-    /* If we have not seen them before, add the account address to holders */
-    function trackHolder(address _from, address _to) internal {
-        if (balanceOf[_from] < 100000000) { //dust
-            for (uint256 i = 0; i < holders; i++) {
-                if (holderAddresses[i] == _from) {
-                    address _last = holderAddresses[holders - 1];
-                    holderAddresses[i] = _last;
-                    delete holderAddresses[holders - 1];
-                    holders--;
-                    balanceOfSeen[_from] = false;
-                    break;
-                }
-            }
-        }
-        if (balanceOfSeen[_to]) return;
-        holderAddresses[holders] = _to;
-        holders++;
-        balanceOfSeen[_to] = true;
-    }
-    /* Get a token holder by index */
-    function holder(uint256 i) constant returns (address, uint256) {
-        return (holderAddresses[i], balanceOf[holderAddresses[i]]);
-    }
+    // /* If we have not seen them before, add the account address to holders */
+    // function trackHolder(address _from, address _to) internal {
+    //     if (balanceOf[_from] < 100000000) { //dust
+    //         for (uint256 i = 0; i < holders; i++) {
+    //             if (holderAddresses[i] == _from) {
+    //                 address _last = holderAddresses[holders - 1];
+    //                 holderAddresses[i] = _last;
+    //                 delete holderAddresses[holders - 1];
+    //                 holders--;
+    //                 balanceOfSeen[_from] = false;
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     if (balanceOfSeen[_to]) return;
+    //     holderAddresses[holders] = _to;
+    //     holders++;
+    //     balanceOfSeen[_to] = true;
+    // }
+    // /* Get a token holder by index */
+    // function holder(uint256 i) constant returns (address, uint256) {
+    //     return (holderAddresses[i], balanceOf[holderAddresses[i]]);
+    // }
 
     function burnReserveAndFreezeTransfers() onlyOwner returns (bool success)  {
         if (frozen) throw;                                    // Check if frozen

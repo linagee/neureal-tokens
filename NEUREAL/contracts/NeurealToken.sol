@@ -39,11 +39,12 @@ contract NeurealToken {
         uint256 _fromCount = _from.holders();
         for (uint256 i = 0; i < _fromCount; i++) {
             var (_add, _bal) = _from.holder(i);
-            uint256 _balConvert = _bal * 10000000000; //TODO add multiplier here
-            if (_balConvert < _bal) continue;
+            uint256 _balConvert = _bal * 10000000000 * 400; //TODO add multiplier here
+            if (_balConvert < _bal) continue; //uint256 overflow
+            if (_balConvert < 1000000000000000000) continue; //dust
             uint256 _newTotalSupply = totalSupply + _balConvert;
-            if (_newTotalSupply > MAXIMUM_SUPPLY) continue;
-            if (_newTotalSupply < totalSupply) continue;
+            if (_newTotalSupply > MAXIMUM_SUPPLY) continue; //max
+            if (_newTotalSupply < totalSupply) continue; //uint256 overflow
             balanceOf[_add] = _balConvert;
             totalSupply = _newTotalSupply;
         }

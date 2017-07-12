@@ -23,6 +23,7 @@ contract NECPToken is owned {
     uint256 public constant MAXIMUM_SUPPLY = 3000000000000;
     
     uint256 public totalSupply;
+    uint256 public frozen = false;
 
     /* This tracks all balances */
     mapping (address => uint256) public balanceOf;
@@ -47,6 +48,7 @@ contract NECPToken is owned {
 
     /* Send coins */
     function transfer(address _to, uint256 _value) {
+        if (frozen) throw;                                   // Check if frozen
         if (_to == 0x0) throw;                               // Prevent transfer to 0x0 address. Use burn() instead
         if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
@@ -71,12 +73,13 @@ contract NECPToken is owned {
         return (holderAddresses[i], balanceOf[holderAddresses[i]]);
     }
 
-    function burnReserveAndLockTransfers() onlyOwner returns (bool success)  {
+    function burnReserveAndFreezeTransfers() onlyOwner returns (bool success)  {
+        if (frozen) throw;                                    // Check if frozen
         uint256 _value = balanceOf[owner];
         totalSupply -= _value;                                // Updates totalSupply
         balanceOf[owner] = 0;                                 // Subtract from the sender
         Burn(owner, _value);
-        //TODO lock token
+        frozen = true;
         return true;
     }
 

@@ -1,290 +1,136 @@
 var NECPToken = artifacts.require("./NECPToken.sol");
-//var SampleRecipientSuccess = artifacts.require("./SampleRecipientSuccess.sol");
 
 contract("NECPToken", function(accounts) {
 
 //CREATION
 
-    it("creation: should create an initial balance of 30000 for the creator", function(done) {
-        NECPToken.new({from: accounts[0]}).then(function(ctr) {
-            console.log("NECPToken Contract:" + ctr.address);
-            return ctr.balanceOf.call(accounts[0]);
-        }).then(function (result) {
-            assert.strictEqual(result.toNumber(), 3000000000000);
-            done();
-        }).catch(done);
-    });
+    // it("creation: should create an initial balance of 30000 for the creator", function(done) {
+    //     NECPToken.new({from: accounts[0]}).then(function(ctr) {
+    //         return ctr.balanceOf.call(accounts[0]);
+    //     }).then(function (result) {
+    //         assert.strictEqual(result.toNumber(), 3000000000000);
+    //         done();
+    //     }).catch(done);
+    // });
 
-    it("creation: test correct setting of vanity information", function(done) {
-      var ctr;
-        NECPToken.new({from: accounts[0]})
-        .then(function(result) {
-            ctr = result;
-            console.log("NECPToken Contract:" + ctr.address);
-            return ctr.name.call();
-        }).then(function (result) {
-            assert.strictEqual(result, 'Neureal Early Contributor Points');
-            return ctr.decimals.call();
-        }).then(function(result) {
-            assert.strictEqual(result.toNumber(), 8);
-            return ctr.symbol.call();
-        }).then(function(result) {
-            assert.strictEqual(result, 'NECP');
-            done();
-        }).catch(done);
-    });
+    // it("creation: test correct setting of vanity information", function(done) {
+    //   var ctr;
+    //     NECPToken.new({from: accounts[0]})
+    //     .then(function(result) {
+    //         ctr = result;
+    //         return ctr.name.call();
+    //     }).then(function (result) {
+    //         assert.strictEqual(result, 'Neureal Early Contributor Points');
+    //         return ctr.decimals.call();
+    //     }).then(function(result) {
+    //         assert.strictEqual(result.toNumber(), 8);
+    //         return ctr.symbol.call();
+    //     }).then(function(result) {
+    //         assert.strictEqual(result, 'NECP');
+    //         done();
+    //     }).catch(done);
+    // });
 
 
 //TRANSERS
 //normal transfers without approvals.
 
-//    it("transfers: give ether transfer should be reversed.", function(done) {
-//        var ctr;
-//        NECPToken.new({from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return web3.eth.sendTransaction({from: accounts[0], to: ctr.address, value: web3.toWei("10", "Ether")});
-//        }).catch(function(result) {
-//            done();
-//        }).catch(done);
-//    });
+    // it("transfers: give ether transfer should be reversed.", function(done) {
+    //     NECPToken.new({from: accounts[0]}).then(function(ctr) {
+    //         return web3.eth.sendTransaction({from: accounts[0], to: ctr.address, value: web3.toWei("0.01", "Ether")});
+    //     }).catch(function(result) {
+    //         done();
+    //     }).catch(done);
+    // });
+
+    // it("transfers: should transfer 100 NECP from accounts[1] to accounts[i]", function(done) {
+    //     var ctr;
+    //     NECPToken.new({from: accounts[0]}).then(function(result) {
+    //         ctr = result;
+    //         console.log("NECPToken Contract:" + ctr.address);
+    //         for (var i = 1; i < 3; i++) {
+    //             ctr.transfer(accounts[i], 10000000000, {from: accounts[0]});
+    //         }
+    //         //console.log(ctr.balanceOf.call(accounts[2]));
+    //         return ctr.transfer(accounts[1], 2000000000, {from: accounts[0]});
+    //     }).then(function (result) {
+    //         return ctr.balanceOf.call(accounts[1]);
+    //     }).then(function (result) {
+    //         assert.strictEqual(result.toNumber(), 12000000000);
+    //         done();
+    //     }).catch(done);
+    // });
+
+    // it("transfers: should fail when trying to transfer 30001 to accounts[1] with accounts[0] having 30000", function(done) {
+    //     NECPToken.new({from: accounts[0]}).then(function(ctr) {
+    //         return ctr.transfer(accounts[1], 3000000000000, {from: accounts[0]});
+    //     }).then(function (result) {
+    //         assert.isFalse(result);
+    //         done();
+    //     }).catch(done);
+    // });
+
+    // it("transfers: should fail when trying to transfer zero.", function(done) {
+    //     var ctr;
+    //     NECPToken.new({from: accounts[0]}).then(function(result) {
+    //         ctr = result;
+    //         return ctr.transfer.call(accounts[1], 0, {from: accounts[0]});
+    //     }).then(function (result) {
+    //         assert.isFalse(result);
+    //         done();
+    //     }).catch(done);
+    // });
+
+    //NOTE: testing uint256 wrapping is impossible in this standard token since you can't supply > 2^256 -1.
+
+    //todo: transfer max amounts.
 
 
-    it("transfers: should transfer 100 NECP to accounts[1] to accounts[900]", function(done) {
-        var ctr;
-        NECPToken.new({from: accounts[0]}).then(function(result) {
-            ctr = result;
-            console.log("NECPToken Contract:" + ctr.address);
-            for (var i = 1; i < 3; i++) {
-                ctr.transfer(accounts[i], 10000000000, {from: accounts[0]});
-            }
-            console.log(ctr.balanceOf.call(accounts[2]));
+//SPECIAL
+//test special (non-ERC20) functions
 
-            return ctr.transfer(accounts[1], 2000000000, {from: accounts[0]});
-        }).then(function (result) {
-            return ctr.balanceOf.call(accounts[1]);
-        }).then(function (result) {
-            assert.strictEqual(result.toNumber(), 12000000000);
-            done();
-        }).catch(done);
-    });
-//
-//    it("transfers: should fail when trying to transfer 10001 to accounts[1] with accounts[0] having 10000", function(done) {
-//        var ctr;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.transfer.call(accounts[1], 10001, {from: accounts[0]});
-//        }).then(function (result) {
-//            assert.isFalse(result);
-//            done();
-//        }).catch(done);
-//    });
-//
-//    it("transfers: should fail when trying to transfer zero.", function(done) {
-//        var ctr;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.transfer.call(accounts[1], 0, {from: accounts[0]});
-//        }).then(function (result) {
-//            assert.isFalse(result);
-//            done();
-//        }).catch(done);
-//    });
-//
-//    //NOTE: testing uint256 wrapping is impossible in this standard token since you can't supply > 2^256 -1.
-//
-//    //todo: transfer max amounts.
-//
-////APPROVALS
-//
-//    it("approvals: msg.sender should approve 100 to accounts[1]", function(done) {
-//        var ctr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.approve(accounts[1], 100, {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.allowance.call(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 100);
-//            done();
-//        }).catch(done);
-//    });
-//
-//    it("approvals: msg.sender should approve 100 to SampleRecipient and then NOTIFY SampleRecipient. It should succeed.", function(done) {
-//        var ctr = null;
-//        var sampleCtr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return SampleRecipientSuccess.new({from: accounts[0]});
-//        }).then(function(result) {
-//            sampleCtr = result;
-//            return ctr.approveAndCall(sampleCtr.address, 100, '0x42', {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.allowance.call(accounts[0], sampleCtr.address);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 100);
-//            return sampleCtr.value.call();
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 100);
-//            done();
-//        }).catch(done);
-//    });
-//
-//    it("approvals: msg.sender should approve 100 to SampleRecipient and then NOTIFY SampleRecipient and throw.", function(done) {
-//        var ctr = null;
-//        var sampleCtr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return SampleRecipientThrow.new({from: accounts[0]});
-//        }).then(function(result) {
-//            sampleCtr = result;
-//            return ctr.approveAndCall.call(sampleCtr.address, 100, '0x42', {from: accounts[0]});
-//        }).catch(function (result) {
-//            //It will catch OOG.
-//            done();
-//        }).catch(done);
-//    });
-//
-//    //bit overkill. But is for testing a bug
-//    it("approvals: msg.sender approves accounts[1] of 100 & withdraws 20 once.", function(done) {
-//        var ctr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.balanceOf.call(accounts[0]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 10000);
-//            return ctr.approve(accounts[1], 100, {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.balanceOf.call(accounts[2]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 0);
-//            return ctr.allowance.call(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 100);
-//            return ctr.transferFrom.call(accounts[0], accounts[2], 20, {from: accounts[1]});
-//        }).then(function (result) {
-//            return ctr.transferFrom(accounts[0], accounts[2], 20, {from: accounts[1]});
-//        }).then(function (result) {
-//            return ctr.allowance.call(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 80);
-//            return ctr.balanceOf.call(accounts[2]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 20);
-//            return ctr.balanceOf.call(accounts[0]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 9980);
-//            done();
-//        }).catch(done);
-//    });
-//
-//    //should approve 100 of msg.sender & withdraw 50, twice. (should succeed)
-//    it("approvals: msg.sender approves accounts[1] of 100 & withdraws 20 twice.", function(done) {
-//        var ctr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.approve(accounts[1], 100, {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.allowance.call(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 100);
-//            return ctr.transferFrom(accounts[0], accounts[2], 20, {from: accounts[1]});
-//        }).then(function (result) {
-//            return ctr.allowance.call(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 80);
-//            return ctr.balanceOf.call(accounts[2]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 20);
-//            return ctr.balanceOf.call(accounts[0]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 9980);
-//            //FIRST tx done.
-//            //onto next.
-//            return ctr.transferFrom(accounts[0], accounts[2], 20, {from: accounts[1]});
-//        }).then(function (result) {
-//            return ctr.allowance.call(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 60);
-//            return ctr.balanceOf.call(accounts[2]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 40);
-//            return ctr.balanceOf.call(accounts[0]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 9960);
-//            done();
-//        }).catch(done);
-//    });
-//
-//    //should approve 100 of msg.sender & withdraw 50 & 60 (should fail).
-//    it("approvals: msg.sender approves accounts[1] of 100 & withdraws 50 & 60 (2nd tx should fail)", function(done) {
-//        var ctr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.approve(accounts[1], 100, {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.allowance.call(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 100);
-//            return ctr.transferFrom(accounts[0], accounts[2], 50, {from: accounts[1]});
-//        }).then(function (result) {
-//            return ctr.allowance.call(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 50);
-//            return ctr.balanceOf.call(accounts[2]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 50);
-//            return ctr.balanceOf.call(accounts[0]);
-//        }).then(function (result) {
-//            assert.strictEqual(result.toNumber(), 9950);
-//            //FIRST tx done.
-//            //onto next.
-//            return ctr.transferFrom.call(accounts[0], accounts[2], 60, {from: accounts[1]});
-//        }).then(function (result) {
-//            assert.isFalse(result);
-//            done();
-//        }).catch(done);
-//    });
-//
-//    it("approvals: attempt withdrawal from acconut with no allowance (should fail)", function(done) {
-//        var ctr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.transferFrom.call(accounts[0], accounts[2], 60, {from: accounts[1]});
-//        }).then(function (result) {
-//              assert.isFalse(result);
-//              done();
-//        }).catch(done);
-//    });
-//
-//    it("approvals: allow accounts[1] 100 to withdraw from accounts[0]. Withdraw 60 and then approve 0 & attempt transfer.", function(done) {
-//        var ctr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.approve(accounts[1], 100, {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.transferFrom(accounts[0], accounts[2], 60, {from: accounts[1]});
-//        }).then(function (result) {
-//            return ctr.approve(accounts[1], 0, {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.transferFrom.call(accounts[0], accounts[2], 10, {from: accounts[1]});
-//        }).then(function (result) {
-//              assert.isFalse(result);
-//              done();
-//        }).catch(done);
-//    });
-//
-//    it("approvals: approve max (2^256 - 1)", function(done) {
-//        var ctr = null;
-//        NECPToken.new(10000, 'Simon Bucks', 1, 'SBX', {from: accounts[0]}).then(function(result) {
-//            ctr = result;
-//            return ctr.approve(accounts[1],'115792089237316195423570985008687907853269984665640564039457584007913129639935' , {from: accounts[0]});
-//        }).then(function (result) {
-//            return ctr.allowance(accounts[0], accounts[1]);
-//        }).then(function (result) {
-//            var match = result.equals('1.15792089237316195423570985008687907853269984665640564039457584007913129639935e+77');
-//            assert.isTrue(match);
-//            done();
-//        }).catch(done);
-//    });
+    // it("onlyOwner: accounts[1] (non-owner) should not be able to call", function(done) {
+    //     NECPToken.new({from: accounts[0]}).then(function(ctr) {
+    //         return ctr.freezeTransfers.call({from: accounts[1]});
+    //     }).then(function (result) {
+    //         assert.isFalse(result);
+    //         done();
+    //     }).catch(done);
+    // });
+
+    // it("freeze: no accounts should be able to transfer after freeze", function(done) {
+    //     var ctr;
+    //     NECPToken.new({from: accounts[0]}).then(function(result) {
+    //         ctr = result;
+    //         console.log("NECPToken Contract:" + ctr.address);
+    //         return ctr.freezeTransfers.call({from: accounts[0]});
+    //     }).then(function (result) {
+    //         for (var i = 0; i < 2; i++) {
+    //             ctr.transfer(accounts[i+1], 10000000000, {from: accounts[i]});
+    //         }
+    //         return ctr.transfer(accounts[1], 2000000000, {from: accounts[0]});
+    //     }).then(function (result) {
+    //         return ctr.balanceOf.call(accounts[0]);
+    //     }).then(function (result) {
+    //         assert.strictEqual(result.toNumber(), 3000000000000);
+    //         done();
+    //     }).catch(done);
+    // });
+
+    // it("burn: accounts[0] (reserve) should have 0 token", function(done) {
+    //     var ctr;
+    //     NECPToken.new({from: accounts[0]}).then(function(result) {
+    //         ctr = result;
+    //         console.log("NECPToken Contract:" + ctr.address);
+    //         return ctr.burnReserveAndFreezeTransfers.call({from: accounts[0]});
+    //     }).then(function (result) {
+    //         assert.isTrue(result);
+    //         console.log("DEBUG:" + ctr.balanceOf.call(accounts[0]));
+    //         return ctr.balanceOf.call(accounts[0]);
+    //     }).then(function (result) {
+    //         assert.strictEqual(result.toNumber(), 0);
+    //         done();
+    //     }).catch(done);
+    // });
 
 });

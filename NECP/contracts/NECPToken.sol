@@ -9,9 +9,6 @@ contract owned {
         if (msg.sender != owner) throw;
         _;
     }
-    function transferOwnership(address newOwner) onlyOwner {
-        owner = newOwner;
-    }
 }
 
 contract NECPToken is owned {
@@ -35,15 +32,15 @@ contract NECPToken is owned {
 
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
-    /* This notifies clients about the amount burnt */
-    event Burn(address indexed from, uint256 value);
+    // /* This notifies clients about the amount burnt */
+    // event Burn(address indexed from, uint256 value);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function NECPToken() {
         balanceOf[msg.sender] = MAXIMUM_SUPPLY;              // Give the creator all initial tokens
         //holderAddresses[0] = msg.sender;                     // Set creator as the sole holder
         totalSupply = MAXIMUM_SUPPLY;                        // Update total supply
-        Transfer(msg.sender, msg.sender, MAXIMUM_SUPPLY);    // Notify all that token has been created
+        // Transfer(msg.sender, msg.sender, MAXIMUM_SUPPLY);    // Notify all that token has been created
     }
 
     /* Send coins */
@@ -82,14 +79,14 @@ contract NECPToken is owned {
     //     return (holderAddresses[i], balanceOf[holderAddresses[i]]);
     // }
 
-    function burnReserveAndFreezeTransfers() onlyOwner returns (bool success)  {
-        if (frozen) throw;                                    // Check if frozen
-        uint256 _value = balanceOf[owner];
-        totalSupply -= _value;                                // Updates totalSupply
-        balanceOf[owner] = 0;                                 // Subtract from the sender
-        Burn(owner, _value);
+    function freezeTransfers() onlyOwner  {
+        // if (frozen) throw;                                    // Check if frozen
+        // uint256 _value = balanceOf[owner];
+        // totalSupply -= _value;                                // totalSupply is final
+        // balanceOf[owner] = 0;                                 // destroy all reserve
         frozen = true;
-        return true;
+        // Burn(owner, _value);
+        //return true;
     }
 
     /* This unnamed function is called whenever someone tries to send ether to it */

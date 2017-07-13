@@ -25,22 +25,13 @@ contract NECPToken is owned {
     /* This tracks all balances */
     mapping (address => uint256) public balanceOf;
 
-    // /* This tracks token holders in a loopable mapping */
-    // mapping (address => bool) balanceOfSeen;
-    // uint256 public holders = 1;
-    // mapping (uint256 => address) holderAddresses;
-
     /* This generates a public event on the blockchain that will notify clients */
     event Transfer(address indexed from, address indexed to, uint256 value);
-    // /* This notifies clients about the amount burnt */
-    // event Burn(address indexed from, uint256 value);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function NECPToken() {
         balanceOf[msg.sender] = MAXIMUM_SUPPLY;              // Give the creator all initial tokens
-        //holderAddresses[0] = msg.sender;                     // Set creator as the sole holder
         totalSupply = MAXIMUM_SUPPLY;                        // Update total supply
-        // Transfer(msg.sender, msg.sender, MAXIMUM_SUPPLY);    // Notify all that token has been created
     }
 
     /* Send coins */
@@ -51,42 +42,11 @@ contract NECPToken is owned {
         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
         balanceOf[_to] += _value;                            // Add the same to the recipient
-        //if (_value != 0) trackHolder(msg.sender, _to);
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
     }
 
-    // /* If we have not seen them before, add the account address to holders */
-    // function trackHolder(address _from, address _to) internal {
-    //     if (balanceOf[_from] < 100000000) { //dust
-    //         for (uint256 i = 0; i < holders; i++) {
-    //             if (holderAddresses[i] == _from) {
-    //                 address _last = holderAddresses[holders - 1];
-    //                 holderAddresses[i] = _last;
-    //                 delete holderAddresses[holders - 1];
-    //                 holders--;
-    //                 balanceOfSeen[_from] = false;
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     if (balanceOfSeen[_to]) return;
-    //     holderAddresses[holders] = _to;
-    //     holders++;
-    //     balanceOfSeen[_to] = true;
-    // }
-    // /* Get a token holder by index */
-    // function holder(uint256 i) constant returns (address, uint256) {
-    //     return (holderAddresses[i], balanceOf[holderAddresses[i]]);
-    // }
-
     function freezeTransfers() onlyOwner  {
-        // if (frozen) throw;                                    // Check if frozen
-        // uint256 _value = balanceOf[owner];
-        // totalSupply -= _value;                                // totalSupply is final
-        // balanceOf[owner] = 0;                                 // destroy all reserve
         frozen = true;
-        // Burn(owner, _value);
-        //return true;
     }
 
     /* This unnamed function is called whenever someone tries to send ether to it */
@@ -94,3 +54,8 @@ contract NECPToken is owned {
         throw;   // Prevents accidental sending of ether
     }
 }
+
+/*
+JSON Interface
+[ { "constant": false, "inputs": [], "name": "freezeTransfers", "outputs": [], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "frozen", "outputs": [ { "name": "", "type": "bool", "value": false } ], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "name", "outputs": [ { "name": "", "type": "string", "value": "Neureal Early Contributor Points" } ], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "totalSupply", "outputs": [ { "name": "", "type": "uint256", "value": "3000000000000" } ], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "decimals", "outputs": [ { "name": "", "type": "uint256", "value": "8" } ], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "MAXIMUM_SUPPLY", "outputs": [ { "name": "", "type": "uint256", "value": "3000000000000" } ], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "standard", "outputs": [ { "name": "", "type": "string", "value": "Token 0.1" } ], "payable": false, "type": "function" }, { "constant": true, "inputs": [ { "name": "", "type": "address" } ], "name": "balanceOf", "outputs": [ { "name": "", "type": "uint256", "value": "0" } ], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "owner", "outputs": [ { "name": "", "type": "address", "value": "0xf5abfa4b2502f0c0afb4212c942157ba0e630a31" } ], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "symbol", "outputs": [ { "name": "", "type": "string", "value": "NECP" } ], "payable": false, "type": "function" }, { "constant": false, "inputs": [ { "name": "_to", "type": "address" }, { "name": "_value", "type": "uint256" } ], "name": "transfer", "outputs": [], "payable": false, "type": "function" }, { "inputs": [], "payable": false, "type": "constructor" }, { "payable": false, "type": "fallback" }, { "anonymous": false, "inputs": [ { "indexed": true, "name": "from", "type": "address" }, { "indexed": true, "name": "to", "type": "address" }, { "indexed": false, "name": "value", "type": "uint256" } ], "name": "Transfer", "type": "event" } ]
+*/

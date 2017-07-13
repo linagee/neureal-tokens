@@ -14,10 +14,11 @@ contract NeurealToken {
     string public constant name = "Neureal Token";
     string public constant symbol = "NEUREAL";
     uint256 public constant decimals = 18;
-    uint256 public MAXIMUM_SUPPLY = 150000000000000000000000000;
+    uint256 public MAXIMUM_SALE = 300000000000000000000000000;
+    uint256 public MAXIMUM_SUPPLY = 324000000000000000000000000;
 
     //TODO *** Must set this to the Neureal Early Contributor Points (NECP) contract address before creating this!!! ***
-    address public transferFromContract = 0xCe8c3E54d4c7a4DC353B1D42edAF38A553aFf8E5;
+    address public migrateFromContract = 0x44789cE716C0C555f0DaD9F9C3Fba1Dc36Fb8cA4;
     
     uint256 public totalSupply = 0;
 
@@ -32,13 +33,13 @@ contract NeurealToken {
     /* This notifies clients about the amount burnt */
     event Burn(address indexed from, uint256 value);
 
-    /* Initializes contract and transfers balances from the transferFromContract */
+    /* Initializes contract and transfers balances from the migrateFromContract */
     function NeurealToken() {
-        //TODO try to owner call burnReserveAndLockTransfers() in NECP from here 
+        //TODO try to owner call lockTransfers() in NECP from here 
 
-        //TODO *** Must call burnReserveAndLockTransfers() as owner in NECPToken before creating this!!! ***
+        //TODO *** Must call lockTransfers() as owner in NECPToken before creating this!!! ***
 
-        // NECPToken _from = NECPToken(transferFromContract);
+        // NECPToken _from = NECPToken(migrateFromContract);
         // uint256 _fromCount = _from.holders();
         // for (uint256 i = 0; i < _fromCount; i++) {
         //     var (_add, _bal) = _from.holder(i);
@@ -58,9 +59,9 @@ contract NeurealToken {
         if (_add == 0x0) throw;
         if (totalSupply >= MAXIMUM_SUPPLY) throw;
         if (migrated[_add]) throw;
-        NECPToken _from = NECPToken(transferFromContract);
+        NECPToken _from = NECPToken(migrateFromContract);
 
-        uint256 _balConvert = _from.balanceOf(_add) * 10000000000 * 400; //TODO add multiplier here
+        uint256 _balConvert = _from.balanceOf(_add) * 10000000000 * 800; //TODO add multiplier here
         uint256 _newTotalSupply = totalSupply + _balConvert;
         if (_newTotalSupply > MAXIMUM_SUPPLY) { //max
             _balConvert = MAXIMUM_SUPPLY - totalSupply;

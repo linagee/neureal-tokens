@@ -1,0 +1,29 @@
+{
+  "name": "neureal-tokens",
+  "version": "0.0.1",
+  "description": "Neureal Ethereum Token Contracts",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neureal/neureal-tokens.git"
+  },
+  "keywords": [
+    "neureal"
+  ],
+  "authors": [],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neureal/neureal-tokens/issues"
+  },
+  "homepage": "https://github.com/neureal/neureal-tokens#readme",
+  "dependencies": {
+    "ethereumjs-testrpc": "^4.0.1",
+    "truffle": "^3.4.3"
+  }
+}
